@@ -32,9 +32,11 @@ export default class SearchList extends Component {
 
     render() {
         if (this.state.n === 0) {return <p>There is no results </p>};
+        const { length: count } = this.state.movies;
+
         return (
             <div>
-                <p>Showing {this.state.movies.length} results</p>
+                <p>Showing {count} results</p>
                 <table className="table">
                     <thead>
                         <tr>
@@ -66,7 +68,7 @@ export default class SearchList extends Component {
 
                 </table>
                 <Pagination
-                    countItems={this.state.movies.length}
+                    countItems={count}
                     pageSize={this.state.pageSize}
                     onPageSize={this.handlePageSize}
                 />
