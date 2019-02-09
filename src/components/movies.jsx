@@ -1,27 +1,28 @@
 import React, {Component } from "react";
 import {getMovies} from "../services/fakeMovieService";
 import Like from "./common/like";
+import Pagination from "./common/pagination";
 
 export default class SearchList extends Component {
     constructor(props) {
         super(props);
 
         let moviesArray = getMovies();
-
         this.state = {
             movies: moviesArray,
-            n: moviesArray.length,
+            pageSize: 4
         };
 
         this.handleDelete = this.handleDelete.bind(this);
     }
+    handlePageSize = () =>{
 
+    };
     handleDelete = (movie) => {
         const movies = this.state.movies.filter(m => m._id !== movie._id);
         this.setState ({movies: movies, n : this.state.n - 1});
 };
     handleLike = (movie) => {
-        // this.setState( {like: !movie.liked})
         const movies = [...this.state.movies];
         const index = movies.indexOf(movie);
         movies[index] = {...movies[index]};
@@ -33,7 +34,7 @@ export default class SearchList extends Component {
         if (this.state.n === 0) {return <p>There is no results </p>};
         return (
             <div>
-                <p>Showing {this.state.n} results</p>
+                <p>Showing {this.state.movies.length} results</p>
                 <table className="table">
                     <thead>
                         <tr>
@@ -64,6 +65,11 @@ export default class SearchList extends Component {
                     </tbody>
 
                 </table>
+                <Pagination
+                    countItems={this.state.movies.length}
+                    pageSize={this.state.pageSize}
+                    onPageSize={this.handlePageSize}
+                />
             </div>
         );
     }
