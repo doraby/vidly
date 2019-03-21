@@ -6,6 +6,8 @@ import ListGroup from "./common/listGroup";
 import {paginate} from "../util/paginate";
 import MoviesTable from "./common/moviesTable";
 import  _ from 'lodash';
+import {Link} from "react-router-dom";
+
 
 export default class SearchList extends Component {
     constructor(props) {
@@ -78,6 +80,10 @@ export default class SearchList extends Component {
                     />
                 </div>
                 <div className="col">
+                    <button
+                        className="btn btn-primary">
+                         <Link to={"/movies/new"}>New Movie</Link>
+                    </button>
                     <p>Showing {totalCount} results</p>
 
                     <MoviesTable
