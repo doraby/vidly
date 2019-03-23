@@ -5,6 +5,7 @@ import Pagination from "./common/pagination";
 import ListGroup from "./common/listGroup";
 import {paginate} from "../util/paginate";
 import MoviesTable from "./common/moviesTable";
+import SearchBox from "./searchBox";
 import  _ from 'lodash';
 import {Link} from "react-router-dom";
 
@@ -18,8 +19,10 @@ export default class SearchList extends Component {
             genres:[],
             pageSize: 4,
             currentPage: 1,
-            selectedGenre: undefined,
+            searchQuery:"",
+            selectedGenre: null,
             sortColumn: { path: 'title', order: 'asc'}
+
         };
     }
 
@@ -29,8 +32,12 @@ export default class SearchList extends Component {
     }
 
     handleGenresSelect = (genre) => {
-        this.setState({ selectedGenre: genre, currentPage: 1 })
+        this.setState({ selectedGenre: genre, searchQuery: "", currentPage: 1 })
     };
+
+    handleSearch = query => {
+        this.setState({ searchQuery: query, selectedGenre: null, currentPage: 1 })
+    }
 
     handlePageClick = (selectedPage) =>{
         this.setState({ currentPage: selectedPage });
@@ -54,10 +61,13 @@ export default class SearchList extends Component {
     };
 
     getPagedData = () => {
-        const {currentPage, pageSize, allMovies, selectedGenre, sortColumn} = this.state;
-        const filtered = selectedGenre && selectedGenre._id
-            ? allMovies.filter(m => m.genre._id === selectedGenre._id)
-            : allMovies;
+        const {currentPage, pageSize, allMovies, selectedGenre, sortColumn, searchQuery} = this.state;
+        let filtered = allMovies;
+        if (searchQuery)
+            filtered = allMovies.filter(m => m.title.toLowerCase().startsWith(searchQuery.toLowerCase())
+            );
+        else if (selectedGenre && selectedGenre._id)
+            filtered = allMovies.filter(m => m.genre._id === selectedGenre._id);
 
         const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
         const movies = paginate(sorted, currentPage, pageSize);
@@ -66,7 +76,7 @@ export default class SearchList extends Component {
     };
 
     render() {
-        const {currentPage, pageSize, sortColumn} = this.state;
+        const {currentPage, pageSize, sortColumn, searchQuery} = this.state;
         if (this.state.n === 0) {return <p>There is no results </p>}
 
         const { totalCount, data: movies} = this.getPagedData();
@@ -85,7 +95,10 @@ export default class SearchList extends Component {
                          <Link to={"/movies/new"}>New Movie</Link>
                     </button>
                     <p>Showing {totalCount} results</p>
-
+                    <SearchBox
+                        value={searchQuery}
+                        onChange={this.handleSearch}
+                    />
                     <MoviesTable
                     movies={movies}
                     sortColumn={sortColumn}
